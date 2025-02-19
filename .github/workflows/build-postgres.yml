@@ -1,0 +1,24 @@
+name: Publish PostgreSQL to ghcr.io
+
+on:
+  workflow_dispatch:
+
+jobs:
+  push-postgres:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Pull and Tag PostgreSQL
+        run: |
+          docker pull pgvector/pgvector:pg16
+          REPO_NAME=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')  # Convert repo name to lowercase
+          docker tag pgvector/pgvector:pg16 ghcr.io/$REPO_NAME-postgres:latest
+
+      - name: Push to GitHub Container Registry
+        run: |
+          REPO_NAME=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          docker push ghcr.io/$REPO_NAME-postgres:latest

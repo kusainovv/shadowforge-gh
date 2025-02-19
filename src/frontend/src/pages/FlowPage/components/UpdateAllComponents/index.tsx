@@ -9,7 +9,6 @@ import useAlertStore from "@/stores/alertStore";
 import useFlowsManagerStore from "@/stores/flowsManagerStore";
 import useFlowStore from "@/stores/flowStore";
 import { useTypesStore } from "@/stores/typesStore";
-import { useUtilityStore } from "@/stores/utilityStore";
 import { cn } from "@/utils/utils";
 import { useUpdateNodeInternals } from "@xyflow/react";
 import { useState } from "react";
@@ -27,8 +26,6 @@ export default function UpdateAllComponents() {
   const updateAllNodes = useUpdateAllNodes(setNodes, updateNodeInternals);
 
   const [dismissed, setDismissed] = useState(false);
-
-  const setDismissAll = useUtilityStore((state) => state.setDismissAll);
 
   const handleUpdateAllComponents = () => {
     setLoadingUpdate(true);
@@ -107,7 +104,7 @@ export default function UpdateAllComponents() {
   return (
     <div
       className={cn(
-        "absolute bottom-2 left-1/2 z-50 flex w-[500px] -translate-x-1/2 items-center gap-8 rounded-lg bg-warning px-4 py-2 text-sm font-medium text-warning-foreground shadow-md transition-all ease-in",
+        "absolute bottom-2 left-1/2 z-50 flex w-[500px] -translate-x-1/2 items-center gap-8 bg-warning px-4 py-2 text-sm font-medium text-warning-foreground shadow-md transition-all ease-in",
         dismissed && "translate-y-[120%]",
       )}
     >
@@ -127,10 +124,8 @@ export default function UpdateAllComponents() {
           variant="link"
           size="icon"
           className="shrink-0 text-sm text-warning-foreground"
-          onClick={(e) => {
+          onClick={() => {
             setDismissed(true);
-            setDismissAll(true);
-            e.stopPropagation();
           }}
         >
           Dismiss

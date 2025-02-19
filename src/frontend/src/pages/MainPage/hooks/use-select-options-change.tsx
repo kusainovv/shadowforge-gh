@@ -6,7 +6,6 @@ const useSelectOptionsChange = (
   setOpenDelete: (value: boolean) => void,
   handleDuplicate: () => void,
   handleExport: () => void,
-  handleEdit: () => void,
 ) => {
   const handleSelectOptionsChange = useCallback(
     (action) => {
@@ -24,8 +23,6 @@ const useSelectOptionsChange = (
         handleDuplicate();
       } else if (action === "export") {
         handleExport();
-      } else if (action === "edit") {
-        handleEdit();
       }
     },
     [
@@ -34,7 +31,6 @@ const useSelectOptionsChange = (
       setOpenDelete,
       handleDuplicate,
       handleExport,
-      handleEdit,
     ],
   );
 

@@ -6,7 +6,6 @@ import { ENABLE_DATASTAX_LANGFLOW } from "@/customization/feature-flags";
 import useFlowsManagerStore from "@/stores/flowsManagerStore";
 import useFlowStore from "@/stores/flowStore";
 import { useUtilityStore } from "@/stores/utilityStore";
-import { ChatMessageType } from "@/types/chat";
 import Convert from "ansi-to-html";
 import { useEffect, useRef, useState } from "react";
 import Robot from "../../../../../assets/robot.png";
@@ -28,8 +27,10 @@ import { convertFiles } from "./helpers/convert-files";
 
 export default function ChatMessage({
   chat,
+  lockChat,
   lastMessage,
   updateChat,
+  setLockChat,
   closeChat,
 }: chatMessagePropsType): JSX.Element {
   const convert = new Convert({ newline: true });
@@ -39,6 +40,7 @@ export default function ChatMessage({
   const fitViewNode = useFlowStore((state) => state.fitViewNode);
   // We need to check if message is not undefined because
   // we need to run .toString() on it
+  
   const [chatMessage, setChatMessage] = useState(
     chat.message ? chat.message.toString() : "",
   );
@@ -48,13 +50,11 @@ export default function ChatMessage({
   const chatMessageRef = useRef(chatMessage);
   const [editMessage, setEditMessage] = useState(false);
   const [showError, setShowError] = useState(false);
-  const isBuilding = useFlowStore((state) => state.isBuilding);
 
   useEffect(() => {
     const chatMessageString = chat.message ? chat.message.toString() : "";
     setChatMessage(chatMessageString);
-    chatMessageRef.current = chatMessage;
-  }, [chat, isBuilding]);
+  }, [chat]);
 
   const playgroundScrollBehaves = useUtilityStore(
     (state) => state.playgroundScrollBehaves,
@@ -62,6 +62,10 @@ export default function ChatMessage({
   const setPlaygroundScrollBehaves = useUtilityStore(
     (state) => state.setPlaygroundScrollBehaves,
   );
+  // Sync ref with state
+  useEffect(() => {
+    chatMessageRef.current = chatMessage;
+  }, [chatMessage]);
 
   // The idea now is that chat.stream_url MAY be a URL if we should stream the output of the chat
   // probably the message is empty when we have a stream_url
@@ -100,17 +104,21 @@ export default function ChatMessage({
 
   useEffect(() => {
     if (streamUrl && !isStreaming) {
+      setLockChat(true);
       streamChunks(streamUrl)
         .then(() => {
+          setLockChat(false);
           if (updateChat) {
             updateChat(chat, chatMessageRef.current);
           }
         })
         .catch((error) => {
           console.error(error);
+          setLockChat(false);
         });
     }
   }, [streamUrl, chatMessage]);
+
   useEffect(() => {
     return () => {
       eventSource.current?.close();
@@ -123,11 +131,11 @@ export default function ChatMessage({
     const element = document.getElementById("last-chat-message");
     if (element && isTabHidden) {
       if (playgroundScrollBehaves === "instant") {
-        element.scrollIntoView({ behavior: playgroundScrollBehaves });
-        setPlaygroundScrollBehaves("smooth");
+        // element.scrollIntoView({ behavior: playgroundScrollBehaves });
+        // setPlaygroundScrollBehaves("smooth");
       } else {
         setTimeout(() => {
-          element.scrollIntoView({ behavior: playgroundScrollBehaves });
+          // element.scrollIntoView({ behavior: playgroundScrollBehaves });
         }, 200);
       }
     }
@@ -180,36 +188,36 @@ export default function ChatMessage({
     );
   };
 
-  const handleEvaluateAnswer = (evaluation: boolean | null) => {
-    updateMessageMutation(
-      {
-        message: {
-          ...chat,
-          files: convertFiles(chat.files),
-          sender_name: chat.sender_name ?? "AI",
-          text: chat.message.toString(),
-          sender: chat.isSend ? "User" : "Machine",
-          flow_id,
-          session_id: chat.session ?? "",
-          properties: {
-            ...chat.properties,
-            positive_feedback: evaluation,
-          },
-        },
-        refetch: true,
-      },
-      {
-        onError: () => {
-          setErrorData({
-            title: "Error updating messages.",
-          });
-        },
-      },
-    );
-  };
+  // const handleEvaluateAnswer = (evaluation: boolean | null) => {
+  //   updateMessageMutation(
+  //     {
+  //       message: {
+  //         ...chat,
+  //         files: convertFiles(chat.files),
+  //         sender_name: chat.sender_name ?? "AI",
+  //         text: chat.message.toString(),
+  //         sender: chat.isSend ? "User" : "Machine",
+  //         flow_id,
+  //         session_id: chat.session ?? "",
+  //         properties: {
+  //           ...chat.properties,
+  //           positive_feedback: evaluation,
+  //         },
+  //       },
+  //       refetch: true,
+  //     },
+  //     {
+  //       onError: () => {
+  //         setErrorData({
+  //           title: "Error updating messages.",
+  //         });
+  //       },
+  //     },
+  //   );
+  // };
 
   const editedFlag = chat.edit ? (
-    <div className="text-sm text-muted-foreground">(Edited)</div>
+    <div className="text-xs   ">(Edited)</div>
   ) : null;
 
   if (chat.category === "error") {
@@ -229,68 +237,52 @@ export default function ChatMessage({
 
   return (
     <>
-      <div className="w-5/6 max-w-[768px] py-4 word-break-break-word">
+      <div className="w-5/6 w-full p-1 word-break-break-word">
         <div
           className={cn(
-            "group relative flex w-full gap-4 rounded-md p-2",
-            editMessage ? "" : "hover:bg-muted",
+            "group relative flex ",
+            editMessage ? "" : "",
           )}
         >
-          <div
-            className={cn(
-              "relative flex h-[32px] w-[32px] items-center justify-center overflow-hidden rounded-md text-2xl",
-              !chat.isSend
-                ? "bg-muted"
-                : "border border-border hover:border-input",
-            )}
-            style={
-              chat.properties?.background_color
-                ? { backgroundColor: chat.properties.background_color }
-                : {}
-            }
-          >
-            {!chat.isSend ? (
-              <div className="flex h-[18px] w-[18px] items-center justify-center">
-                {chat.properties?.icon ? (
+    
+            {!chat.isSend ? null
+              // <div className="flex w-[22px] items-center justify-center">
+                /* {chat.properties?.icon ? (
                   chat.properties.icon.match(
                     /[\u2600-\u27BF\uD83C-\uDBFF\uDC00-\uDFFF]/,
                   ) ? (
-                    <span className="">{chat.properties.icon}</span>
+                    <span className="weight-bold text-blue-100">{chat.properties.icon}</span>
                   ) : (
                     <ForwardedIconComponent name={chat.properties.icon} />
                   )
-                ) : (
-                  <img
-                    src={Robot}
-                    className="absolute bottom-0 left-0 scale-[60%]"
-                    alt={"robot_image"}
-                  />
-                )}
-              </div>
-            ) : (
-              <div className="flex h-[18px] w-[18px] items-center justify-center">
-                {chat.properties?.icon ? (
-                  chat.properties.icon.match(
-                    /[\u2600-\u27BF\uD83C-\uDBFF\uDC00-\uDFFF]/,
-                  ) ? (
-                    <div className="">{chat.properties.icon}</div>
-                  ) : (
-                    <ForwardedIconComponent name={chat.properties.icon} />
-                  )
-                ) : !ENABLE_DATASTAX_LANGFLOW ? (
-                  <ProfileIcon />
-                ) : (
-                  <CustomProfileIcon />
-                )}
-              </div>
+                ) : null} */
+              // </div>
+             : (
+              <></>
+              // <div className="flex w-[22px] items-center justify-center">
+              //   {chat.properties?.icon ? (
+              //     chat.properties.icon.match(
+              //       /[\u2600-\u27BF\uD83C-\uDBFF\uDC00-\uDFFF]/,
+              //     ) ? (
+              //       <div className="">{chat.properties.icon}</div>
+              //     ) : (
+              //       <ForwardedIconComponent name={chat.properties.icon} />
+              //     )
+              //   ) : !ENABLE_DATASTAX_LANGFLOW ? (
+              //     <ProfileIcon />
+              //   ) : (
+              //     <CustomProfileIcon />
+              //   )}
+              // </div>
             )}
-          </div>
+
           <div className="flex w-[94%] flex-col">
-            <div>
+            {/* <div>
               <div
                 className={cn(
-                  "flex max-w-full items-baseline gap-3 truncate pb-2 text-[14px] font-semibold",
+                  "flex max-w-full text-base font-bold color-blue-500 items-baseline gap-3 truncate",
                 )}
+
                 style={
                   chat.properties?.text_color
                     ? { color: chat.properties.text_color }
@@ -302,20 +294,20 @@ export default function ChatMessage({
               >
                 {chat.sender_name}
                 {chat.properties?.source && (
-                  <div className="text-[13px] font-normal text-muted-foreground">
+                  <div className="text-xs font-normal">
                     {chat.properties?.source.source}
+                    {chat.timestamp}
                   </div>
                 )}
               </div>
-            </div>
+            </div> */}
             {chat.content_blocks && chat.content_blocks.length > 0 && (
               <ContentBlockDisplay
                 contentBlocks={chat.content_blocks}
                 isLoading={
                   chatMessage === "" &&
-                  chat.properties?.state === "partial" &&
-                  isBuilding &&
-                  lastMessage
+                  lockChat &&
+                  chat.properties?.state === "partial"
                 }
                 state={chat.properties?.state}
                 chatId={chat.id}
@@ -354,14 +346,14 @@ export default function ChatMessage({
                         }
                         className="flex w-full flex-col"
                       >
-                        {chatMessage === "" && isBuilding && lastMessage ? (
+                        {chatMessage === "" && lockChat ? (
                           <IconComponent
                             name="MoreHorizontal"
                             className="h-8 w-8 animate-pulse"
                           />
                         ) : (
-                          <div className="w-full">
-                            {editMessage ? (
+                          <div className="w-full text-[#70A1A1] font-extrabold tracking-wide leading-[1.5]">
+                            {/* {editMessage ? (
                               <EditMessageField
                                 key={`edit-message-${chat.id}`}
                                 message={decodedMessage}
@@ -370,14 +362,14 @@ export default function ChatMessage({
                                 }}
                                 onCancel={() => setEditMessage(false)}
                               />
-                            ) : (
+                            ) : ( */}
                               <MarkdownField
                                 chat={chat}
                                 isEmpty={isEmpty}
                                 chatMessage={chatMessage}
                                 editedFlag={editedFlag}
                               />
-                            )}
+                            {/* )} */}
                           </div>
                         )}
                       </div>
@@ -400,9 +392,7 @@ export default function ChatMessage({
                   ) : (
                     <>
                       <div
-                        className={`w-full items-baseline whitespace-pre-wrap break-words text-[14px] font-normal ${
-                          isEmpty ? "text-muted-foreground" : "text-primary"
-                        }`}
+                        className={`w-full items-baseline whitespace-pre-wrap break-words text-base text-[#70A1A1] font-extrabold tracking-wide leading-[1.5]`}
                         data-testid={`chat-message-${chat.sender_name}-${chatMessage}`}
                       >
                         {isEmpty ? EMPTY_INPUT_SEND_MESSAGE : decodedMessage}
@@ -410,8 +400,8 @@ export default function ChatMessage({
                       </div>
                     </>
                   )}
-                  {chat.files && (
-                    <div className="my-2 flex flex-col gap-5">
+                  {chat.files?.length === 0 ? null : (
+                    <div className="my-2 flex flex-col gap-1">
                       {chat.files?.map((file, index) => {
                         return <FileCardWrapper index={index} path={file} />;
                       })}
@@ -421,7 +411,7 @@ export default function ChatMessage({
               </div>
             )}
           </div>
-          {!editMessage && (
+          {/* {!editMessage && (
             <div className="invisible absolute -top-4 right-0 group-hover:visible">
               <div>
                 <EditMessageButton
@@ -437,7 +427,7 @@ export default function ChatMessage({
                 />
               </div>
             </div>
-          )}
+          )} */}
         </div>
       </div>
       <div id={lastMessage ? "last-chat-message" : undefined} />

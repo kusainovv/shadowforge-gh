@@ -1,5 +1,4 @@
-import { EventDeliveryType } from "@/constants/enums";
-import { useGetConfig } from "@/controllers/API/queries/config/use-get-config";
+import { Separator } from "@/components/ui/separator";
 import {
   useDeleteMessages,
   useGetMessagesQuery,
@@ -17,6 +16,7 @@ import { IOModalPropsType } from "../../types/components";
 import { cn } from "../../utils/utils";
 import BaseModal from "../baseModal";
 import { ChatViewWrapper } from "./components/chat-view-wrapper";
+import ChatView from "./components/chatView/chat-view";
 import { SelectedViewField } from "./components/selected-view-field";
 import { SidebarOpenView } from "./components/sidebar-open-view";
 
@@ -113,7 +113,8 @@ export default function IOModal({
 
   const buildFlow = useFlowStore((state) => state.buildFlow);
   const setIsBuilding = useFlowStore((state) => state.setIsBuilding);
-
+  const lockChat = useFlowStore((state) => state.lockChat);
+  const setLockChat = useFlowStore((state) => state.setLockChat);
   const isBuilding = useFlowStore((state) => state.isBuilding);
   const messages = useMessagesStore((state) => state.messages);
   const [sessions, setSessions] = useState<string[]>(
@@ -136,11 +137,6 @@ export default function IOModal({
 
   const chatValue = useUtilityStore((state) => state.chatValueStore);
   const setChatValue = useUtilityStore((state) => state.setChatValueStore);
-  const config = useGetConfig();
-
-  function shouldStreamEvents() {
-    return config.data?.event_delivery === EventDeliveryType.STREAMING;
-  }
 
   const sendMessage = useCallback(
     async ({
@@ -151,6 +147,8 @@ export default function IOModal({
       files?: string[];
     }): Promise<void> => {
       if (isBuilding) return;
+      setIsBuilding(true);
+      setLockChat(true);
       setChatValue("");
       for (let i = 0; i < repeat; i++) {
         await buildFlow({
@@ -159,13 +157,24 @@ export default function IOModal({
           files: files,
           silent: true,
           session: sessionId,
-          stream: shouldStreamEvents(),
+          setLockChat,
         }).catch((err) => {
           console.error(err);
+          setLockChat(false);
         });
       }
+      // refetch();
+      setLockChat(false);
     },
-    [isBuilding, setIsBuilding, chatValue, chatInput?.id, sessionId, buildFlow],
+    [
+      isBuilding,
+      setIsBuilding,
+      setLockChat,
+      chatValue,
+      chatInput?.id,
+      sessionId,
+      buildFlow,
+    ],
   );
 
   useEffect(() => {
@@ -216,27 +225,27 @@ export default function IOModal({
     }
   }, [open]);
 
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth < 1024) {
-        // 1024px is Tailwind's 'lg' breakpoint
-        setSidebarOpen(false);
-      } else {
-        setSidebarOpen(true);
-      }
-    };
+  // useEffect(() => {
+  //   const handleResize = () => {
+  //     if (window.innerWidth < 1024) {
+  //       // 1024px is Tailwind's 'lg' breakpoint
+  //       setSidebarOpen(false);
+  //     } else {
+  //       setSidebarOpen(true);
+  //     }
+  //   };
 
-    // Initial check
-    handleResize();
+  //   // Initial check
+  //   handleResize();
 
-    // Add event listener
-    window.addEventListener("resize", handleResize);
+  //   // Add event listener
+  //   window.addEventListener("resize", handleResize);
 
-    // Cleanup
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
+  //   // Cleanup
+  //   return () => {
+  //     window.removeEventListener("resize", handleResize);
+  //   };
+  // }, []);
 
   return (
     <BaseModal
@@ -246,24 +255,25 @@ export default function IOModal({
       type={isPlayground ? "full-screen" : undefined}
       onSubmit={() => sendMessage({ repeat: 1 })}
       size="x-large"
-      className="!rounded-[12px] p-0"
+      className="p-0"
     >
       <BaseModal.Trigger>{children}</BaseModal.Trigger>
       {/* TODO ADAPT TO ALL TYPES OF INPUTS AND OUTPUTS */}
       <BaseModal.Content overflowHidden className="h-full">
         {open && (
-          <div className="flex-max-width h-full">
+          <div className="flex"> {/**flex-max-width h-full bg-red-500 */}
             <div
               className={cn(
-                "flex h-full flex-shrink-0 flex-col justify-start overflow-hidden transition-all duration-300",
-                sidebarOpen
-                  ? "absolute z-50 lg:relative lg:w-1/5 lg:max-w-[280px]"
-                  : "w-0",
+                "flex bg-light-gray flex-shrink-0 flex-col min-w-[250px] justify-start transition-all duration-300",
+                // sidebarOpen
+                  // ? "absolute z-50 lg:relative lg:w-1/5 lg:max-w-[280px]"
+                  // : "",
+                "h-[calc(95vh-32px)] shadow-sidebar-chat"
               )}
             >
-              <div className="flex h-full flex-col overflow-y-auto border-r border-border bg-muted p-4 text-center custom-scroll dark:bg-canvas">
+              <div className="flex flex-col overflow-y-auto h-full border-r border-border p-4 text-center custom-scroll dark:bg-canvas">
                 <div className="flex items-center gap-2 pb-8">
-                  <ShadTooltip
+                  {/* <ShadTooltip
                     styleClasses="z-50"
                     side="right"
                     content="Hide sidebar"
@@ -278,12 +288,12 @@ export default function IOModal({
                         className="h-[18px] w-[18px] text-ring"
                       />
                     </Button>
-                  </ShadTooltip>
+                  </ShadTooltip> */}
                   {sidebarOpen && (
-                    <div className="font-semibold">Playground</div>
+                    <div className=" ">Chat</div>
                   )}
                 </div>
-                {sidebarOpen && (
+                {/* {sidebarOpen && ( */}
                   <SidebarOpenView
                     sessions={sessions}
                     setSelectedViewField={setSelectedViewField}
@@ -292,11 +302,11 @@ export default function IOModal({
                     visibleSession={visibleSession}
                     selectedViewField={selectedViewField}
                   />
-                )}
+                {/* )} */}
               </div>
             </div>
-            <div className="flex h-full min-w-96 flex-grow bg-background">
-              {selectedViewField && (
+            <div className="flex min-w-96 h-[calc(95vh-32px)] flex-grow bg-silver">
+              {/* {selectedViewField && (
                 <SelectedViewField
                   selectedViewField={selectedViewField}
                   setSelectedViewField={setSelectedViewField}
@@ -307,7 +317,7 @@ export default function IOModal({
                   currentFlowId={currentFlowId}
                   nodes={nodes}
                 />
-              )}
+              )} */}
               <ChatViewWrapper
                 selectedViewField={selectedViewField}
                 visibleSession={visibleSession}
@@ -322,6 +332,8 @@ export default function IOModal({
                 messagesFetched={messagesFetched}
                 sessionId={sessionId}
                 sendMessage={sendMessage}
+                lockChat={lockChat}
+                setLockChat={setLockChat}
                 canvasOpen={canvasOpen}
                 setOpen={setOpen}
               />

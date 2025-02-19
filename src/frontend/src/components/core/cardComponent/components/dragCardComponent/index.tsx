@@ -11,7 +11,7 @@ export default function DragCardComponent({ data }: { data: FlowType }) {
         draggable
         //TODO check color schema
         className={cn(
-          "group relative flex flex-col justify-between overflow-hidden transition-all hover:bg-muted/50 hover:shadow-md hover:dark:bg-[#ffffff10]",
+          "group relative flex flex-col justify-between overflow-hidden transition-all",
         )}
       >
         <div>

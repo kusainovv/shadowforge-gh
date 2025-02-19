@@ -26,12 +26,12 @@ export const MarkdownField = ({
         linkTarget="_blank"
         rehypePlugins={[rehypeMathjax]}
         className={cn(
-          "markdown prose flex w-fit max-w-full flex-col items-baseline text-[14px] font-normal word-break-break-word dark:prose-invert",
-          isEmpty ? "text-muted-foreground" : "text-primary",
+          "markdown prose flex w-fit max-w-full flex-col items-baseline text-base font-normal word-break-break-word dark:prose-invert !text-[#70A1A1]",
+          isEmpty ? "  " : "text-black",
         )}
         components={{
           p({ node, ...props }) {
-            return <span className="w-fit max-w-full">{props.children}</span>;
+            return <span className="w-fit max-w-full font-extrabold tracking-wide leading-[1.5]">{props.children}</span>;
           },
           ol({ node, ...props }) {
             return <ol className="max-w-full">{props.children}</ol>;

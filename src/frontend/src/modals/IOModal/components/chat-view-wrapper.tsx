@@ -19,17 +19,20 @@ export const ChatViewWrapper = ({
   messagesFetched,
   sessionId,
   sendMessage,
+  lockChat,
+  setLockChat,
   canvasOpen,
   setOpen,
 }: ChatViewWrapperProps) => {
+  
   return (
     <div
       className={cn(
         "flex h-full w-full flex-col justify-between p-4",
-        selectedViewField ? "hidden" : "",
+        // selectedViewField ? "hidden" : "",
       )}
     >
-      <div className="mb-4 h-[5%] text-[16px] font-semibold">
+      <div className="mb-4 h-[5%] text-base">
         {visibleSession && sessions.length > 0 && sidebarOpen && (
           <div className="hidden lg:block">
             {visibleSession === currentFlowId
@@ -38,8 +41,8 @@ export const ChatViewWrapper = ({
           </div>
         )}
         <div className={cn(sidebarOpen ? "lg:hidden" : "")}>
-          <div className="flex items-center gap-2">
-            <Button
+          {/* <div className="flex items-center gap-2"> */}
+            {/* <Button
               variant="ghost"
               size="icon"
               onClick={() => setSidebarOpen(true)}
@@ -49,20 +52,21 @@ export const ChatViewWrapper = ({
                 name="PanelLeftOpen"
                 className="h-[18px] w-[18px] text-ring"
               />
-            </Button>
-            <div className="font-semibold">Playground</div>
-          </div>
+            </Button> */}
+            {/* <div>Playground</div> */}
+          {/* </div> */}
+           <div>Playground</div>
         </div>
         <div
           className={cn(
             sidebarOpen ? "pointer-events-none opacity-0" : "",
-            "absolute flex h-8 items-center justify-center rounded-sm ring-offset-background transition-opacity focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+            "absolute flex h-8 items-center justify-center   ring-offset-background transition-opacity focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
             isPlayground ? "right-2 top-4" : "right-12 top-2",
           )}
         >
           <ShadTooltip side="bottom" styleClasses="z-50" content="New Chat">
             <Button
-              className="mr-2 h-[32px] w-[32px] hover:bg-secondary-hover"
+              className="mr-2 h-[32px] w-[32px]"
               variant="ghost"
               size="icon"
               onClick={() => {
@@ -83,14 +87,17 @@ export const ChatViewWrapper = ({
         className={cn(
           visibleSession ? "h-[95%]" : "h-full",
           sidebarOpen
-            ? "pointer-events-none blur-sm lg:pointer-events-auto lg:blur-0"
+            ? "" // pointer-events-none blur-sm lg:pointer-events-auto lg:blur-0
             : "",
+          "h-[95%] overflow-y-auto" // bg-red-500 h-[calc(100% - 32px)]
         )}
       >
         {messagesFetched && (
           <ChatView
             focusChat={sessionId}
             sendMessage={sendMessage}
+            lockChat={lockChat}
+            setLockChat={setLockChat}
             visibleSession={visibleSession}
             closeChat={
               !canvasOpen

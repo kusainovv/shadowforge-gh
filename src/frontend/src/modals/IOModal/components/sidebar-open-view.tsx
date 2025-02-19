@@ -29,7 +29,7 @@ export const SidebarOpenView = ({
                 <Button
                   data-testid="new-chat"
                   variant="ghost"
-                  className="flex h-8 w-8 items-center justify-center !p-0 hover:bg-secondary-hover"
+                  className="flex h-8 w-8 items-center justify-center !p-0"
                   onClick={(_) => {
                     setvisibleSession(undefined);
                     setSelectedViewField(undefined);

@@ -2,9 +2,11 @@ import ForwardedIconComponent from "@/components/common/genericIconComponent";
 import TableComponent, {
   TableComponentProps,
 } from "@/components/core/parameterRenderComponent/components/tableComponent";
+import { Button } from "@/components/ui/button";
 import { TableOptionsTypeAPI } from "@/types/api";
+import { DialogClose } from "@radix-ui/react-dialog";
 import { AgGridReact } from "ag-grid-react";
-import { ForwardedRef, forwardRef } from "react";
+import { ElementRef, ForwardedRef, forwardRef } from "react";
 import BaseModal from "../baseModal";
 
 interface TableModalProps extends TableComponentProps {
@@ -14,19 +16,11 @@ interface TableModalProps extends TableComponentProps {
   children: React.ReactNode;
   tableOptions?: TableOptionsTypeAPI;
   hideColumns?: boolean | string[];
-  tableIcon?: string;
 }
 
 const TableModal = forwardRef<AgGridReact, TableModalProps>(
   (
-    {
-      tableTitle,
-      description,
-      children,
-      disabled,
-      tableIcon,
-      ...props
-    }: TableModalProps,
+    { tableTitle, description, children, disabled, ...props }: TableModalProps,
     ref: ForwardedRef<AgGridReact>,
   ) => {
     return (
@@ -43,14 +37,9 @@ const TableModal = forwardRef<AgGridReact, TableModalProps>(
         disable={disabled}
       >
         <BaseModal.Trigger asChild>{children}</BaseModal.Trigger>
-        <BaseModal.Header
-          description={props.tableOptions?.description ?? description}
-        >
+        <BaseModal.Header description={description}>
           <span className="pr-2">{tableTitle}</span>
-          <ForwardedIconComponent
-            name={tableIcon ?? "Table"}
-            className="mr-2 h-4 w-4"
-          />
+          <ForwardedIconComponent name="Table" className="mr-2 h-4 w-4" />
         </BaseModal.Header>
         <BaseModal.Content>
           <TableComponent

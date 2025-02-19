@@ -3,8 +3,6 @@ import { UtilityStoreType } from "@/types/zustand/utility";
 import { create } from "zustand";
 
 export const useUtilityStore = create<UtilityStoreType>((set, get) => ({
-  dismissAll: false,
-  setDismissAll: (dismissAll: boolean) => set({ dismissAll }),
   chatValueStore: "",
   setChatValueStore: (value: string) => set({ chatValueStore: value }),
   selectedItems: [],

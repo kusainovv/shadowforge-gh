@@ -6,16 +6,17 @@ import { FilePreviewType } from "../../../../../../types/components";
 import { classNames } from "../../../../../../utils/utils";
 
 const BUTTON_STATES = {
-  NO_INPUT: "bg-high-indigo text-background",
-  HAS_CHAT_VALUE: "text-primary",
+  NO_INPUT: "bg-high-indigo text-black",
+  HAS_CHAT_VALUE: "text-black",
   SHOW_STOP:
-    "bg-muted hover:bg-secondary-hover dark:hover:bg-input text-foreground cursor-pointer",
+    "text-foreground cursor-pointer",
   DEFAULT:
-    "bg-primary text-primary-foreground hover:bg-primary-hover hover:text-secondary",
+    "bg-silver text-black-foreground hover:bg-silver-hover hover:text-black",
 };
 
 type ButtonSendWrapperProps = {
   send: () => void;
+  lockChat: boolean;
   noInput: boolean;
   chatValue: string;
   files: FilePreviewType[];
@@ -23,6 +24,7 @@ type ButtonSendWrapperProps = {
 
 const ButtonSendWrapper = ({
   send,
+  lockChat,
   noInput,
   chatValue,
   files,
@@ -30,9 +32,10 @@ const ButtonSendWrapper = ({
   const stopBuilding = useFlowStore((state) => state.stopBuilding);
 
   const isBuilding = useFlowStore((state) => state.isBuilding);
-  const showStopButton = isBuilding || files.some((file) => file.loading);
+  const showStopButton = lockChat || files.some((file) => file.loading);
+  const showPlayButton = !lockChat && noInput;
   const showSendButton =
-    !(isBuilding || files.some((file) => file.loading)) && !noInput;
+    !(lockChat || files.some((file) => file.loading)) && !noInput;
 
   const getButtonState = () => {
     if (showStopButton) return BUTTON_STATES.SHOW_STOP;
@@ -55,12 +58,13 @@ const ButtonSendWrapper = ({
   return (
     <Button
       className={buttonClasses}
+      disabled={lockChat && !isBuilding}
       onClick={handleClick}
       unstyled
       data-testid={showStopButton ? "button-stop" : "button-send"}
     >
       <Case condition={showStopButton}>
-        <div className="flex items-center gap-2 rounded-md text-[14px] font-medium">
+        <div className="flex items-center gap-2   text-[14px] font-medium">
           Stop
           <Loading className="h-[16px] w-[16px]" />
         </div>

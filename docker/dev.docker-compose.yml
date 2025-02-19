@@ -3,10 +3,11 @@ networks:
 
 services:
   langflow:
-    build:
-      context: ..
-      dockerfile: docker/dev.Dockerfile
-    image: dev-langflow
+    image: ghcr.io/shadowforge-ai/application-langflow:latest  # Using prebuilt image
+    # build:
+    #   context: ..
+    #   dockerfile: docker/dev.Dockerfile
+    # image: dev-langflow
     container_name: dev-langflow
     restart: always
     ports:
@@ -15,9 +16,12 @@ services:
     environment:
       - PYTHONDONTWRITEBYTECODE=1
       - LANGFLOW_DATABASE_URL=postgresql://langflow:langflow@postgres:5432/langflow
-      - LANGFLOW_SUPERUSER=langflow
-      - LANGFLOW_SUPERUSER_PASSWORD=langflow
       - LANGFLOW_CONFIG_DIR=/var/lib/langflow
+      - LANGFLOW_AUTO_LOGIN=false
+      - LANGFLOW_SUPERUSER=shadowforge
+      - LANGFLOW_SUPERUSER_PASSWORD=shadowforge
+      - LANGFLOW_SECRET_KEY=shadowforge
+      - LANGFLOW_NEW_USER_IS_ACTIVE=false
     env_file:
       - ../.env
     volumes:
@@ -30,7 +34,8 @@ services:
 
   postgres:
     container_name: postgres
-    image: pgvector/pgvector:pg16
+    image: ghcr.io/shadowforge-ai/application-postgres:latest
+    # image: pgvector/pgvector:pg16
     environment:
       POSTGRES_USER: langflow
       POSTGRES_PASSWORD: langflow

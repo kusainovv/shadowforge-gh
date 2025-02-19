@@ -1,0 +1,21 @@
+name: Manual workflow
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy with Docker Compose
+        uses: appleboy/ssh-action@v0.1.8
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          debug: true
+          script: |
+            cd application
+            docker-compose -f docker/dev.docker-compose.yml up -d --pull always --remove-orphans
+            docker image prune -f
