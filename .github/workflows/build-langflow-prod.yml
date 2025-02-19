@@ -25,12 +25,14 @@ jobs:
     
           - name: Tag LangFlow Image for Production
             run: |
-              docker tag langflow-prod ghcr.io/shadowforge:prod
+              REPO_NAME=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')  # Convert repo name to lowercase
+              docker tag langflow-prod ghcr.io/$REPO_NAME/shadowforge:production
     
           - name: Push LangFlow Production Image to GHCR
             run: |
-              echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u shadowforge-ai --password-stdin
-              docker push ghcr.io/shadowforge:prod
+              REPO_NAME=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+              echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+              docker push ghcr.io/$REPO_NAME/shadowforge:production
 #   deploy:
 #     runs-on: ubuntu-latest
 #     needs: push-langflow
