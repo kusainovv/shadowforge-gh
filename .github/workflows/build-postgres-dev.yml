@@ -14,11 +14,11 @@ jobs:
       - name: Pull and Tag PostgreSQL
         run: |
           docker pull pgvector/pgvector:pg16
-          REPO_OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')  # Use only the GitHub org/user
-          docker tag pgvector/pgvector:pg16 ghcr.io/$REPO_OWNER/shadowforge-postgres:development
+          REPO_NAME=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')  # Convert repo name to lowercase
+          docker tag pgvector/pgvector:pg16 ghcr.io/$REPO_NAME/shadowforge-postgres:development
 
       - name: Push to GitHub Container Registry
         run: |
-          REPO_OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          REPO_NAME=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')  # Convert repo name to lowercase
           echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-          docker push ghcr.io/$REPO_OWNER/shadowforge-postgres:development
+          docker push ghcr.io/$REPO_NAME/shadowforge-postgres:development
