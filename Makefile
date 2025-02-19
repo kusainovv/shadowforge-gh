@@ -272,25 +272,47 @@ frontendc: install_frontendc
 backend: setup_env install_backend ## run the backend in development mode
 	@-kill -9 $$(lsof -t -i:7860) || true
 ifdef login
-	@echo "Running backend autologin is $(login)";
+	@echo "Running backend autologin is $(login)"
 	LANGFLOW_AUTO_LOGIN=$(login) uv run uvicorn \
 		--factory langflow.main:create_app \
 		--host 0.0.0.0 \
-		--port $(port) \
+		--port 7860 \
 		$(if $(filter-out 1,$(workers)),, --reload) \
 		--env-file $(env) \
 		--loop asyncio \
 		$(if $(workers),--workers $(workers),)
 else
-	@echo "Running backend respecting the $(env) file";
+	@echo "Running backend respecting the $(env) file"
 	uv run uvicorn \
 		--factory langflow.main:create_app \
 		--host 0.0.0.0 \
-		--port $(port) \
+		--port 7860 \
 		$(if $(filter-out 1,$(workers)),, --reload) \
 		--env-file $(env) \
 		--loop asyncio \
 		$(if $(workers),--workers $(workers),)
+endif
+
+backend-prod: setup_env install_backend ## run the backend in production mode
+	@-kill -9 $$(lsof -t -i:7860) || true
+ifdef login
+	@echo "Running backend autologin in production mode with $(login)"
+	LANGFLOW_AUTO_LOGIN=$(login) uv run uvicorn \
+		--factory langflow.main:create_app \
+		--host 0.0.0.0 \
+		--port 7860 \
+		--env-file $(env) \
+		--loop asyncio \
+		$(if $(workers),--workers $(workers),--workers 4)
+else
+	@echo "Running backend in production mode respecting the $(env) file"
+	uv run uvicorn \
+		--factory langflow.main:create_app \
+		--host 0.0.0.0 \
+		--port 7860 \
+		--env-file $(env) \
+		--loop asyncio \
+		$(if $(workers),--workers $(workers),--workers 4)
 endif
 
 build_and_run: setup_env ## build the project and run it
