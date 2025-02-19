@@ -1,0 +1,62 @@
+name: Deploy LangFlow to Production
+
+on:
+  workflow_dispatch:  # Manual trigger only
+
+jobs:
+  push-langflow:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Make build script executable
+        run: chmod +x docker/build-langflow-dev.sh
+
+      - name: Run LangFlow Build Script (Production)
+        run: docker/build-langflow-dev.sh production
+
+      - name: Tag LangFlow Image for Production
+        run: |
+          REPO_NAME=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          docker tag langflow-prod ghcr.io/$REPO_NAME-langflow:prod
+
+      - name: Push LangFlow Production Image to GHCR
+        run: |
+          REPO_NAME=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          echo ${{ secrets.GHCR_PAT }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          docker push ghcr.io/$REPO_NAME-langflow:prod
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: push-langflow
+    steps:
+      - name: Deploy to Production Server
+        uses: appleboy/ssh-action@v0.1.8
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          debug: true
+          script: |
+            cd infra
+            git pull
+
+            # ✅ Login to GHCR using Classic PAT
+            echo ${{ secrets.GHCR_PAT }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+            # ✅ Pull the latest production image
+            docker-compose -f prod.docker-compose.yml pull langflow
+
+            # ✅ Restart containers
+            docker-compose -f prod.docker-compose.yml up -d --remove-orphans
+
+            # ✅ Clean up unused images
+            docker image prune -f

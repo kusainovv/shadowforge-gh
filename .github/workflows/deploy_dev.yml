@@ -17,5 +17,6 @@ jobs:
           debug: true
           script: |
             cd application
-            docker-compose -f docker/dev.docker-compose.yml up -d --pull always --remove-orphans
+            docker-compose -f docker/dev.docker-compose.yml pull  # Pull latest images
+            docker-compose -f docker/dev.docker-compose.yml up -d --remove-orphans
             docker image prune -f
