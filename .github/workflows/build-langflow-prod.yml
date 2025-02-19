@@ -1,4 +1,4 @@
-name: Deploy LangFlow to Production
+name: Publish LangFlow Production to ghcr.io
 
 on:
   workflow_dispatch:  # Manual trigger only

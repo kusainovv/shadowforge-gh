@@ -1,4 +1,4 @@
-name: Publish LangFlow to ghcr.io
+name: Publish LangFlow Development to ghcr.io
 
 on:
   workflow_dispatch:  # Manual trigger only
