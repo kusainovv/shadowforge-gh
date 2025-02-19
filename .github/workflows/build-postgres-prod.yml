@@ -1,4 +1,4 @@
-name: Publish PostgreSQL to ghcr.io
+name: Publish PostgreSQL Production to ghcr.io
 
 on:
   workflow_dispatch:
