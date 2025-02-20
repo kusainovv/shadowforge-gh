@@ -31,17 +31,20 @@ RUN apt-get update \
     git \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
-
 # Copy backend source code
 COPY . /app
 
 # Ensure `uv` dependencies are installed
-RUN uv sync --frozen
+RUN uv sync --frozen --no-dev
 
 # Ensure `prod.start.sh` has execution permission
 RUN chmod +x ./docker/prod.start.sh
 
 # Copy built frontend files from the previous stage
+# Copy built frontend files from the previous stage into the backend
+# Adjust this path if your backend expects them in a different location
+# COPY --from=frontend-builder /app/build/ src/backend/base/langflow/frontend/
+
 # Install dependencies using uv
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
