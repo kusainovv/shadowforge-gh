@@ -33,7 +33,7 @@ const TextAreaWrapper = ({
   const setChatValueStore = useUtilityStore((state) => state.setChatValueStore);
 
   const additionalClassNames =
-    "form-input block w-full border-0 custom-scroll focus:border-ring shadow-none focus:ring-0 p-0 sm:text-sm";
+    "form-input block w-full border-0 custom-scroll focus:border-ring shadow-field focus:ring-0 p-0 sm:text-sm";
 
   useEffect(() => {
     if (!lockChat && !noInput) {

@@ -509,7 +509,7 @@ const SidebarMenu = React.forwardRef<
   <ul
     ref={ref}
     data-sidebar="menu"
-    className={cn("flex w-full min-w-0 flex-col gap-[2px]", className)}
+    className={cn("flex w-full min-w-0 flex-col gap-[6px]", className)}
     {...props}
   />
 ));
@@ -530,7 +530,7 @@ SidebarMenuItem.displayName = "SidebarMenuItem";
 
 // dropdown item
 const sidebarMenuButtonVariants = cva(
-  "peer/menu-button flex w-full items-center gap-2 overflow-hidden p-2 text-left text-sm outline-none shadow-sidebar-item-deactivated ring-ring transition-[width,height,padding] focus-visible:ring-1 active:shadow-sidebar-item-activated disabled:pointer-events-none disabled:opacity-50 group-has-[[data-sidebar=menu-action]]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium data-[active=true]:text-black data-[state=open]:hover:text-black group-data-[collapsible=icon]:!size-8 group-data-[collapsible=icon]:!p-2 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0",
+  "peer/menu-button bg-silver b flex w-full items-center gap-2 overflow-hidden p-2 text-left text-sm outline-none shadow-button ring-ring transition-[width,height,padding] focus-visible:ring-1 active:shadow-sidebar-item-activated disabled:pointer-events-none disabled:opacity-50 group-has-[[data-sidebar=menu-action]]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium data-[active=true]:text-black data-[state=open]:hover:text-black group-data-[collapsible=icon]:!size-8 group-data-[collapsible=icon]:!p-2 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0",
   {
     variants: {
       variant: {

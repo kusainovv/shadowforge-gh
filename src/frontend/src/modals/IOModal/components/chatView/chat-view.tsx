@@ -176,7 +176,7 @@ export default function ChatView({
       onDragLeave={dragLeave}
       onDrop={onDrop}
     >
-      <div ref={messagesRef} className="bg-white h-[340px] w-full mb-0 p-2 chat-message-div">
+      <div ref={messagesRef} className="bg-white h-[340px] w-full mb-0 p-2 shadow-field chat-message-div">
         {groupedChatHistory &&
           (lockChat || groupedChatHistory?.length > 0 ? (
             <>

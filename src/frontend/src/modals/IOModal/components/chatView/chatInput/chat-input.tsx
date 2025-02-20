@@ -221,8 +221,10 @@ export default function ChatInput({
         </div>
       </div>
 
-      <div className="flex w-full flex-col h-[120px] bg-white shadow-field focus:border-[1.75px] has-[:focus]:border-primary">
+      <div className="flex w-full flex-col h-[120px] bg-white focus:border-[1.75px] has-[:focus]:border-primary">
         <TextAreaWrapper
+
+          
           checkSendingOk={checkSendingOk}
           send={send}
           lockChat={lockChat}

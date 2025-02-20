@@ -130,7 +130,7 @@ export const SidebarDraggableComponent = forwardRef(
               data-testid={sectionName + display_name}
               id={sectionName + display_name}
               className={cn(
-                "group/draggable flex cursor-grab items-center gap-2 p-3 shadow-sidebar-item-deactivated",
+                "group/draggable flex cursor-grab items-center gap-2 p-2 mt-2 shadow-button ",
                 error && "cursor-not-allowed select-none",
                 disabled
                   ? "pointer-events-none"

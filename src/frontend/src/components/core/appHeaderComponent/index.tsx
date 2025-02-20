@@ -18,6 +18,8 @@ import { useEffect, useRef, useState } from "react";
 import { AccountMenu } from "./components/AccountMenu";
 import FlowMenu from "./components/FlowMenu";
 import GithubStarComponent from "./components/GithubStarButton";
+import { AspisIcon } from "@/icons/AspisIcon";
+import { ShadowForgeIcon } from "@/icons/ShadowForge";
 
 export default function AppHeader(): JSX.Element {
   const notificationCenter = useAlertStore((state) => state.notificationCenter);
@@ -50,9 +52,9 @@ export default function AppHeader(): JSX.Element {
     <div className="flex h-[62px] w-full bg-gradient-to-r from-navy-gradient-start to-navy-gradient-end items-center justify-between gap-2 border-b px-5 py-2.5 dark:bg-silver">
       {/* Left Section */}
       <div className={`flex items-center gap-2`}>
-        <Button
+        <div
           onClick={() => navigate("/")}
-          className="mr-1 flex h-8 w-8 items-center shadow-button bg-silver"
+          className="flex h-8 gap-2 text-sm items-center text-white cursor-pointer"
           data-testid="icon-ChevronLeft"
         >
           {/* {ENABLE_DATASTAX_LANGFLOW ? (
@@ -63,8 +65,9 @@ export default function AppHeader(): JSX.Element {
             <></>
             // <span className="fill-black text-2xl dark:fill-white">⛓️</span>
           )} */}
-          logo
-        </Button>
+          <ShadowForgeIcon />
+        ShadowForge Foundry
+        </div>
         {/* {ENABLE_DATASTAX_LANGFLOW && (
           <>
             <CustomOrgSelector />
