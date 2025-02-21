@@ -5,9 +5,9 @@ import { LoadingPage } from "./pages/LoadingPage";
 import router from "./routes";
 
 export default function App() {
-  return <React.StrictMode>
+  return <>
     <Suspense fallback={<LoadingPage />}>
       <RouterProvider router={router} />
     </Suspense>
-  </React.StrictMode>
+  </>
 }

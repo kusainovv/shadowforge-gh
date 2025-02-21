@@ -104,7 +104,7 @@ export const EXPORT_DIALOG_SUBTITLE = "Export flow as JSON file.";
  * @constant
  */
 export const SETTINGS_DIALOG_SUBTITLE =
-  "Customize workspace settings and preferences.";
+  "Customize your flow details and settings.";
 
 /**
  * The base text for subtitle of Flow Logs (Menubar)
@@ -139,7 +139,7 @@ export const EDIT_DIALOG_SUBTITLE =
  * @constant
  */
 export const CODE_PROMPT_DIALOG_SUBTITLE =
-  "Edit your Python code snippet. Refer to the ShadowForge documentation for more information on how to write your own component.";
+  "Edit your Python code snippet. Refer to the Langflow documentation for more information on how to write your own component.";
 
 export const CODE_DICT_DIALOG_SUBTITLE =
   "Customize your dictionary, adding or editing key-value pairs as needed. Supports adding new objects {} or arrays [].";
@@ -214,7 +214,7 @@ export const EXPORT_CODE_DIALOG =
  * @constant
  */
 export const COLUMN_DIV_STYLE =
-  " w-full h-full flex overflow-auto flex-col   px-16 ";
+  " w-full h-full flex overflow-auto flex-col bg-muted px-16 ";
 
 export const NAV_DISPLAY_STYLE =
   " w-full flex justify-between py-12 pb-2 px-6 ";
@@ -235,13 +235,13 @@ export const DESCRIPTIONS: string[] = [
   "Your Hub for Text Generation.",
   "Promptly Ingenious!",
   "Building Linguistic Labyrinths.",
-  "ShadowForge: Create, Chain, Communicate.",
+  "Langflow: Create, Chain, Communicate.",
   "Connect the Dots, Craft Language.",
   "Interactive Language Weaving.",
   "Generate, Innovate, Communicate.",
   "Conversation Catalyst Engine.",
   "Language Chainlink Master.",
-  "Design Dialogues with ShadowForge.",
+  "Design Dialogues with Langflow.",
   "Nurture NLP Nodes Here.",
   "Conversational Cartography Unlocked.",
   "Design, Develop, Dialogize.",
@@ -629,7 +629,7 @@ export const TIMEOUT_ERROR_DESCRIPION = "Server is busy.";
 export const SIGN_UP_SUCCESS = "Account created! Await admin activation. ";
 
 export const API_PAGE_PARAGRAPH =
-  "Your secret ShadowForge API keys are listed below. Do not share your API key with others, or expose it in the browser or other client-side code.";
+  "Your secret Langflow API keys are listed below. Do not share your API key with others, or expose it in the browser or other client-side code.";
 
 export const API_PAGE_USER_KEYS =
   "This user does not have any keys assigned at the moment.";
@@ -686,8 +686,8 @@ export const TOOLTIP_OUTDATED_NODE =
 
 export const CHAT_SECOND_INITIAL_TEXT = "to inspect previous messages.";
 
-export const TOOLTIP_OPEN_HIDDEN_OUTPUTS = "Show hidden outputs";
-export const TOOLTIP_HIDDEN_OUTPUTS = "Hide outputs";
+export const TOOLTIP_OPEN_HIDDEN_OUTPUTS = "Expand hidden outputs";
+export const TOOLTIP_HIDDEN_OUTPUTS = "Collapse hidden outputs";
 
 export const ZERO_NOTIFICATIONS = "No new notifications";
 
@@ -703,7 +703,7 @@ export const INPUT_HANDLER_HOVER = "Avaliable input components:";
 export const OUTPUT_HANDLER_HOVER = "Avaliable output components:";
 export const TEXT_INPUT_MODAL_TITLE = "Inputs";
 export const OUTPUTS_MODAL_TITLE = "Outputs";
-export const LANGFLOW_CHAT_TITLE = "ShadowForge Chat";
+export const LANGFLOW_CHAT_TITLE = "Langflow Chat";
 export const CHAT_INPUT_PLACEHOLDER =
   "No chat input variables found. Click to run your flow.";
 export const CHAT_INPUT_PLACEHOLDER_SEND = "Send a message...";
@@ -711,11 +711,11 @@ export const EDIT_CODE_TITLE = "Edit Code";
 export const MY_COLLECTION_DESC =
   "Manage your projects. Download and upload entire collections.";
 export const STORE_DESC = "Explore community-shared flows and components.";
-export const STORE_TITLE = "LangfShadowForgelow Store";
+export const STORE_TITLE = "Langflow Store";
 export const NO_API_KEY = "You don't have an API key.";
-export const INSERT_API_KEY = "Insert your ShadowForge API key.";
+export const INSERT_API_KEY = "Insert your Langflow API key.";
 export const INVALID_API_KEY = "Your API key is not valid. ";
-export const CREATE_API_KEY = `Don’t have an API key? Sign up at`;
+export const CREATE_API_KEY = `Don't have an API key? Sign up at`;
 export const STATUS_BUILD = "Build to validate status.";
 export const STATUS_INACTIVE = "Execution blocked";
 export const STATUS_BUILDING = "Building...";
@@ -742,6 +742,8 @@ export const BUNDLES_SIDEBAR_FOLDER_NAMES = [
   "assemblyai",
   "LangWatch",
   "langwatch",
+  "Youtube",
+  "youtube",
 ];
 
 export const AUTHORIZED_DUPLICATE_REQUESTS = [
@@ -817,8 +819,8 @@ export const defaultShortcuts = [
     shortcut: "backspace",
   },
   {
-    display_name: "Open playground",
-    name: "Open playground",
+    display_name: "Open Playground",
+    name: "Open Playground",
     shortcut: "mod+k",
   },
   {
@@ -972,12 +974,12 @@ export const NOTE_NODE_MAX_HEIGHT = 800;
 export const NOTE_NODE_MAX_WIDTH = 600;
 
 export const COLOR_OPTIONS = {
-  amber: "white",
-  neutral: "white",
-  rose: "white",
-  blue: "white",
-  lime: "white",
-  transparent: "white",
+  amber: "hsl(var(--note-amber))",
+  neutral: "hsl(var(--note-neutral))",
+  rose: "hsl(var(--note-rose))",
+  blue: "hsl(var(--note-blue))",
+  lime: "hsl(var(--note-lime))",
+  transparent: null,
 };
 
 export const maxSizeFilesInBytes = 10 * 1024 * 1024; // 10MB in bytes
@@ -994,12 +996,19 @@ export const PAGINATION_ROWS_COUNT = [12, 24, 48, 96];
 export const STORE_PAGINATION_ROWS_COUNT = [12, 24, 48, 96];
 
 export const GRADIENT_CLASS =
-  "linear-gradient(to right, hsl(white / 0.3), white)"; // "linear-gradient(to right, hsl(var(--background) / 0.3), hsl(var(--background)))";
+  "linear-gradient(to right, hsl(var(--background) / 0.3), hsl(var(--background)))";
 
 export const RECEIVING_INPUT_VALUE = "Receiving input";
 
-export const ICON_STROKE_WIDTH = 1.25;
+export const ICON_STROKE_WIDTH = 1.5;
 
 export const DEFAULT_PLACEHOLDER = "Type something...";
 
 export const DEFAULT_TOOLSET_PLACEHOLDER = "Used as a tool";
+
+export const POLLING_MESSAGES = {
+  ENDPOINT_NOT_AVAILABLE: "Endpoint not available",
+  STREAMING_NOT_SUPPORTED: "Streaming not supported",
+} as const;
+
+export const POLLING_INTERVAL = 100; // milliseconds between polling attempts

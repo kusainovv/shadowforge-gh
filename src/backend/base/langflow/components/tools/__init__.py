@@ -31,6 +31,13 @@ from langchain_core._api.deprecation import LangChainDeprecationWarning
 # from .wolfram_alpha_api import WolframAlphaAPIComponent
 # from .yahoo import YfinanceComponent
 # from .yahoo_finance import YfinanceToolComponent
+from .get_fear_greed import GetFearGreedComponent
+from .get_btc_usdt_inflow import GetBTCUSDTInflowComponent
+from .get_fear_greed import GetFearGreedComponent
+from .get_aspis_execute_order import GetAspisExecuteOrderComponent
+from .get_aspis_fund_info import GetAspisFundInfoComponent
+from .get_aspis_vault_balance import GetAspisVaultBalanceComponent
+from .get_aspis_rates import GetAspisRatesComponent
 
 # with warnings.catch_warnings():
 #     warnings.simplefilter("ignore", LangChainDeprecationWarning)
@@ -76,6 +83,6 @@ __all__ = [
     "GetAspisAssetRate",
     "GetAspisExecuteOrder",
     "GetAspisVaultFundInfo",
-    "FetchUserTweets"
+    # "FetchUserTweets"
 ]
  

@@ -19,6 +19,8 @@ import { ChatViewWrapper } from "./components/chat-view-wrapper";
 import ChatView from "./components/chatView/chat-view";
 import { SelectedViewField } from "./components/selected-view-field";
 import { SidebarOpenView } from "./components/sidebar-open-view";
+import { useGetConfig } from "@/controllers/API/queries/config/use-get-config";
+import { EventDeliveryType } from "@/constants/enums";
 
 export default function IOModal({
   children,
@@ -113,8 +115,8 @@ export default function IOModal({
 
   const buildFlow = useFlowStore((state) => state.buildFlow);
   const setIsBuilding = useFlowStore((state) => state.setIsBuilding);
-  const lockChat = useFlowStore((state) => state.lockChat);
-  const setLockChat = useFlowStore((state) => state.setLockChat);
+  // const lockChat = useFlowStore((state) => state.lockChat);
+  // const setLockChat = useFlowStore((state) => state.setLockChat);
   const isBuilding = useFlowStore((state) => state.isBuilding);
   const messages = useMessagesStore((state) => state.messages);
   const [sessions, setSessions] = useState<string[]>(
@@ -138,6 +140,12 @@ export default function IOModal({
   const chatValue = useUtilityStore((state) => state.chatValueStore);
   const setChatValue = useUtilityStore((state) => state.setChatValueStore);
 
+  const config = useGetConfig();
+
+  function shouldStreamEvents() {
+    return config.data?.event_delivery === EventDeliveryType.STREAMING;
+  }
+
   const sendMessage = useCallback(
     async ({
       repeat = 1,
@@ -147,8 +155,8 @@ export default function IOModal({
       files?: string[];
     }): Promise<void> => {
       if (isBuilding) return;
-      setIsBuilding(true);
-      setLockChat(true);
+      // setIsBuilding(true);
+      // setLockChat(true);
       setChatValue("");
       for (let i = 0; i < repeat; i++) {
         await buildFlow({
@@ -157,19 +165,19 @@ export default function IOModal({
           files: files,
           silent: true,
           session: sessionId,
-          setLockChat,
+          stream: shouldStreamEvents(),
         }).catch((err) => {
           console.error(err);
-          setLockChat(false);
+          // setLockChat(false);
         });
       }
       // refetch();
-      setLockChat(false);
+      // setLockChat(false);
     },
     [
       isBuilding,
       setIsBuilding,
-      setLockChat,
+      // setLockChat,
       chatValue,
       chatInput?.id,
       sessionId,
@@ -332,8 +340,8 @@ export default function IOModal({
                 messagesFetched={messagesFetched}
                 sessionId={sessionId}
                 sendMessage={sendMessage}
-                lockChat={lockChat}
-                setLockChat={setLockChat}
+                // lockChat={lockChat}
+                // setLockChat={setLockChat}
                 canvasOpen={canvasOpen}
                 setOpen={setOpen}
               />

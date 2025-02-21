@@ -53,6 +53,12 @@ export type FlowPoolType = {
 };
 
 export type FlowStoreType = {
+  //key x, y
+  positionDictionary: { [key: number]: number };
+  isPositionAvailable: (position: { x: number; y: number }) => boolean;
+  setPositionDictionary: (positionDictionary: {
+    [key: number]: number;
+  }) => void;
   fitViewNode: (nodeId: string) => void;
   autoSaveFlow: (() => void) | undefined;
   componentsToUpdate: string[];
@@ -139,16 +145,16 @@ export type FlowStoreType = {
     input_value,
     files,
     silent,
-    setLockChat,
     session,
+    stream,
   }: {
-    setLockChat?: (lock: boolean) => void;
     startNodeId?: string;
     stopNodeId?: string;
     input_value?: string;
     files?: string[];
     silent?: boolean;
     session?: string;
+    stream?: boolean;
   }) => Promise<void>;
   getFlow: () => { nodes: Node[]; edges: EdgeType[]; viewport: Viewport };
   updateVerticesBuild: (
@@ -178,8 +184,6 @@ export type FlowStoreType = {
     buildId?: string,
   ) => void;
   getNodePosition: (nodeId: string) => { x: number; y: number };
-  setLockChat: (lock: boolean) => void;
-  lockChat: boolean;
   updateFreezeStatus: (nodeIds: string[], freeze: boolean) => void;
   currentFlow: FlowType | undefined;
   setCurrentFlow: (flow: FlowType | undefined) => void;
