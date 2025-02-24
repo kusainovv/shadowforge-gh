@@ -155,8 +155,6 @@ export default function IOModal({
       files?: string[];
     }): Promise<void> => {
       if (isBuilding) return;
-      // setIsBuilding(true);
-      // setLockChat(true);
       setChatValue("");
       for (let i = 0; i < repeat; i++) {
         await buildFlow({
@@ -168,21 +166,10 @@ export default function IOModal({
           stream: shouldStreamEvents(),
         }).catch((err) => {
           console.error(err);
-          // setLockChat(false);
         });
       }
-      // refetch();
-      // setLockChat(false);
     },
-    [
-      isBuilding,
-      setIsBuilding,
-      // setLockChat,
-      chatValue,
-      chatInput?.id,
-      sessionId,
-      buildFlow,
-    ],
+    [isBuilding, setIsBuilding, chatValue, chatInput?.id, sessionId, buildFlow],
   );
 
   useEffect(() => {

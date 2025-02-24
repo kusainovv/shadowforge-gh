@@ -18,21 +18,17 @@ import { useFileHandler } from "./chatInput/hooks/use-file-handler";
 import ChatMessage from "./chatMessage/chat-message";
 import moment from 'moment';
 
-function transformTo12HourFormat(utcTimestamp) {
-  return moment.utc(utcTimestamp).local().format('h:mm a');
-}
-
 const MemoizedChatMessage = memo(ChatMessage, (prevProps, nextProps) => {
   return (
     prevProps.chat.message === nextProps.chat.message &&
     prevProps.chat.id === nextProps.chat.id &&
     prevProps.chat.session === nextProps.chat.session &&
     prevProps.chat.content_blocks === nextProps.chat.content_blocks &&
-    prevProps.chat.properties === nextProps.chat.properties
+    prevProps.chat.properties === nextProps.chat.properties &&
+    prevProps.lastMessage === nextProps.lastMessage
   );
 });
 
-// the chat view component
 export default function ChatView({
   sendMessage,
   visibleSession,
@@ -46,7 +42,6 @@ export default function ChatView({
   const [chatHistory, setChatHistory] = useState<ChatMessageType[] | undefined>(
     undefined,
   );
-  
   const messages = useMessagesStore((state) => state.messages);
   const nodes = useFlowStore((state) => state.nodes);
   const chatInput = inputs.find((input) => input.type === "ChatInput");
@@ -55,30 +50,9 @@ export default function ChatView({
     (state) => state.displayLoadingMessage,
   );
 
-  const [groupedChatHistory, setGroupedChatHistory] = useState([]);
-
-  const groupMessagesBySender = (messages) => {
-    const grouped = [];
-    let currentGroup = [];
-
-    messages.forEach((message) => {
-      if (
-        currentGroup.length === 0 ||
-        currentGroup[0].sender_name === message.sender_name
-      ) {
-        currentGroup.push(message);
-      } else {
-        grouped.push(currentGroup);
-        currentGroup = [message];
-      }
-    });
-
-    if (currentGroup.length > 0) {
-      grouped.push(currentGroup);
-    }
-
-    return grouped;
-  };
+  function transformTo12HourFormat(utcTimestamp) {
+    return moment.utc(utcTimestamp).local().format('h:mm a');
+  }
 
 
   const isBuilding = useFlowStore((state) => state.isBuilding);
@@ -117,7 +91,7 @@ export default function ChatView({
           sender_name: message.sender_name,
           files: files,
           id: message.id,
-          timestamp: message.timestamp,
+          timestamp: transformTo12HourFormat(message.timestamp),
           session: message.session_id,
           edit: message.edit,
           background_color: message.background_color || "",
@@ -127,9 +101,10 @@ export default function ChatView({
           properties: message.properties || {},
         };
       });
-    const finalChatHistory = [...messagesFromMessagesStore].sort((a, b) => {
-      return new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime();
-    });
+    // const finalChatHistory = [...messagesFromMessagesStore].sort((a, b) => {
+    //   return new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime();
+    // });
+    const finalChatHistory = messagesFromMessagesStore;
 
     if (messages.length === 0 && !isBuilding && chatInputNode && isTabHidden) {
       setChatValueStore(
@@ -141,62 +116,11 @@ export default function ChatView({
 
     setChatHistory(finalChatHistory);
   }, [flowPool, messages, visibleSession]);
-
   useEffect(() => {
     if (messagesRef.current) {
       messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
     }
   }, []);
-
-  useEffect(() => {
-    const messagesFromMessagesStore: ChatMessageType[] = messages
-      .filter(
-        (message) =>
-          message.flow_id === currentFlowId &&
-          (visibleSession === message.session_id || visibleSession === null)
-      )
-      .map((message) => {
-        let files = message.files;
-        // Handle the "[]" case, empty string, or already parsed array
-        if (Array.isArray(files)) {
-          // files is already an array, no need to parse
-        } else if (files === "[]" || files === "") {
-          files = [];
-        } else if (typeof files === "string") {
-          try {
-            files = JSON.parse(files);
-          } catch (error) {
-            console.error("Error parsing files:", error);
-            files = [];
-          }
-        }
-        return {
-          isSend: message.sender === "User",
-          message: message.text,
-          sender_name: message.sender_name,
-          files: files,
-          id: message.id,
-          timestamp: transformTo12HourFormat(message.timestamp),
-          session: message.session_id,
-          edit: message.edit,
-          background_color: message.background_color || "",
-          text_color: message.text_color || "",
-          content_blocks: message.content_blocks || [],
-          category: message.category || "",
-          properties: message.properties || {},
-        };
-      });
-
-    const finalChatHistory = [...messagesFromMessagesStore].sort((a, b) => {
-      return new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime();
-    });
-
-    const groupedHistory = groupMessagesBySender(finalChatHistory);
-    setChatHistory(finalChatHistory);
-    setGroupedChatHistory(groupedHistory);
-  }, [flowPool, messages, visibleSession]);
-
-
 
   const ref = useRef<HTMLDivElement | null>(null);
 
@@ -239,69 +163,71 @@ export default function ChatView({
 
   return (
     <div
-      className="flex h-full max-w-[1024px] m-auto flex-col"
+    className="flex h-full max-w-[1024px] m-auto flex-col"
       onDragOver={dragOver}
       onDragEnter={dragEnter}
       onDragLeave={dragLeave}
       onDrop={onDrop}
     >
       <div ref={messagesRef} className="bg-white h-[340px] w-full mb-0 p-2 shadow-field chat-message-div">
-        {groupedChatHistory &&
-          (groupedChatHistory?.length > 0 ? (
+        {chatHistory &&
+          (isBuilding || chatHistory?.length > 0 ? (
             <>
-              {groupedChatHistory.map((group, groupIndex) => (
-                <div key={groupIndex} className="mb-4 w-full">
-                  {/* Display sender name and timestamp for the first message in the group */}
+              {chatHistory?.map((chat, index) => <div key={index} className="mb-4 w-full">
                   <div className="flex items-center gap-x-2 text-lg font-bold text-blue-500">
-                    <p className="m-0">{group[0]?.sender_name}{" "}</p>
-                    <span className="text-gray-400">({group[0]?.timestamp})</span>
+                    <p className="m-0">{chat.sender_name}{" "}</p>
+                    <span className="text-gray-400">({chat.timestamp})</span>
                   </div>
-                  <div className="ml-0">
-                    {group.map((chat, index) => (
-                      <MemoizedChatMessage
-                        chat={chat}
-                        lastMessage={chatHistory.length - 1 === index}
-                        key={`${chat.id}-${index}`}
-                        updateChat={updateChat}
-                        closeChat={closeChat}
-                      />
-                    ))}
-                  </div>
+
+                <div className="ml-0">
+                  <MemoizedChatMessage
+                    chat={chat}
+                    lastMessage={chatHistory.length - 1 === index}
+                    key={`${chat.id}-${index}`}
+                    updateChat={updateChat}
+                    closeChat={closeChat}
+                  />
                 </div>
-              ))}
+              </div>)}
             </>
-          ) : <>
+          ) : (
             <div className="flex h-full w-full flex-col items-center justify-center">
-                Empty
-               {/* <div className="flex flex-col items-center justify-center gap-4 p-8">
-                 {ENABLE_NEW_LOGO ? (
-                   <LangflowLogo
-                     title="Langflow logo"
-                     className="h-10 w-10 scale-[1.5]"
-                   />
-                 ) : (
-                   <ChainLogo
+              Empty
+              {/* <div className="flex flex-col items-center justify-center gap-4 p-8">
+                {ENABLE_NEW_LOGO ? (
+                  <LangflowLogo
+                    title="Langflow logo"
+                    className="h-10 w-10 scale-[1.5]"
+                  />
+                ) : (
+                  <ChainLogo
                     title="Langflow logo"
                     className="h-10 w-10 scale-[1.5]"
                   />
                 )}
                 <div className="flex flex-col items-center justify-center">
-                  <h3 className="mt-2 pb-2 text-2xl text-black">New chat</h3>
-                  <p className="text-lg" data-testid="new-chat-text">
-                     <TextEffectPerChar>
-                     Test your flow with a chat prompt
-                   </TextEffectPerChar>
+                  <h3 className="mt-2 pb-2 text-2xl font-semibold text-primary">
+                    New chat
+                  </h3>
+                  <p
+                    className="text-lg text-muted-foreground"
+                    data-testid="new-chat-text"
+                  >
+                    <TextEffectPerChar>
+                      Test your flow with a chat prompt
+                    </TextEffectPerChar>
                   </p>
-               </div>
-             </div> */}
+                </div>
+              </div> */}
             </div>
-          </>)}
+          ))}
         <div
-          className={
-            displayLoadingMessage
+        className={
+          displayLoadingMessage
               ? "w-full max-w-[768px] py-4 word-break-break-word md:w-5/6"
               : ""
           }
+          ref={ref}
         >
           {displayLoadingMessage &&
             !(chatHistory?.[chatHistory.length - 1]?.category === "error") &&

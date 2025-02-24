@@ -118,7 +118,7 @@ export default function SessionSelector({
       className={cn(
         "flex bg-silver cursor-pointer px-4 py-2",
         // "file-component-accordion-div group cursor-pointer   text-left text-[13px] hover:bg-secondary-hover",
-        isVisible ? "shadow-tab-activated" : "shadow-tab-deactivated",
+        isVisible ? "shadow-tab-deactivated" : "shadow-tab-activated",
       )}
     >
       <div className="flex w-full justify-between items-center">

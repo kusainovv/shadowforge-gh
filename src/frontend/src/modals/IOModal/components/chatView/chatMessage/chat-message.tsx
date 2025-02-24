@@ -38,7 +38,6 @@ export default function ChatMessage({
   const fitViewNode = useFlowStore((state) => state.fitViewNode);
   // We need to check if message is not undefined because
   // we need to run .toString() on it
-  
   const [chatMessage, setChatMessage] = useState(
     chat.message ? chat.message.toString() : "",
   );
@@ -53,7 +52,8 @@ export default function ChatMessage({
   useEffect(() => {
     const chatMessageString = chat.message ? chat.message.toString() : "";
     setChatMessage(chatMessageString);
-  }, [chat]);
+    chatMessageRef.current = chatMessage;
+  }, [chat, isBuilding]);
 
   const playgroundScrollBehaves = useUtilityStore(
     (state) => state.playgroundScrollBehaves,
@@ -61,10 +61,6 @@ export default function ChatMessage({
   const setPlaygroundScrollBehaves = useUtilityStore(
     (state) => state.setPlaygroundScrollBehaves,
   );
-  // Sync ref with state
-  useEffect(() => {
-    chatMessageRef.current = chatMessage;
-  }, [chatMessage]);
 
   // The idea now is that chat.stream_url MAY be a URL if we should stream the output of the chat
   // probably the message is empty when we have a stream_url
@@ -113,8 +109,7 @@ export default function ChatMessage({
           console.error(error);
         });
     }
-  }, [streamUrl, chatMessage]);;
-
+  }, [streamUrl, chatMessage]);
   useEffect(() => {
     return () => {
       eventSource.current?.close();
@@ -127,11 +122,11 @@ export default function ChatMessage({
     const element = document.getElementById("last-chat-message");
     if (element && isTabHidden) {
       if (playgroundScrollBehaves === "instant") {
-        // element.scrollIntoView({ behavior: playgroundScrollBehaves });
-        // setPlaygroundScrollBehaves("smooth");
+        element.scrollIntoView({ behavior: playgroundScrollBehaves });
+        setPlaygroundScrollBehaves("smooth");
       } else {
         setTimeout(() => {
-          // element.scrollIntoView({ behavior: playgroundScrollBehaves });
+          element.scrollIntoView({ behavior: playgroundScrollBehaves });
         }, 200);
       }
     }
@@ -184,34 +179,35 @@ export default function ChatMessage({
     );
   };
 
-  // const handleEvaluateAnswer = (evaluation: boolean | null) => {
-  //   updateMessageMutation(
-  //     {
-  //       message: {
-  //         ...chat,
-  //         files: convertFiles(chat.files),
-  //         sender_name: chat.sender_name ?? "AI",
-  //         text: chat.message.toString(),
-  //         sender: chat.isSend ? "User" : "Machine",
-  //         flow_id,
-  //         session_id: chat.session ?? "",
-  //         properties: {
-  //           ...chat.properties,
-  //           positive_feedback: evaluation,
-  //         },
-  //       },
-  //       refetch: true,
-  //     },
-  //     {
-  //       onError: () => {
-  //         setErrorData({
-  //           title: "Error updating messages.",
-  //         });
-  //       },
-  //     },
-  //   );
-  // };
+  const handleEvaluateAnswer = (evaluation: boolean | null) => {
+    updateMessageMutation(
+      {
+        message: {
+          ...chat,
+          files: convertFiles(chat.files),
+          sender_name: chat.sender_name ?? "AI",
+          text: chat.message.toString(),
+          sender: chat.isSend ? "User" : "Machine",
+          flow_id,
+          session_id: chat.session ?? "",
+          properties: {
+            ...chat.properties,
+            positive_feedback: evaluation,
+          },
+        },
+        refetch: true,
+      },
+      {
+        onError: () => {
+          setErrorData({
+            title: "Error updating messages.",
+          });
+        },
+      },
+    );
+  };
 
+  
   const editedFlag = chat.edit ? (
     <div className="text-xs   ">(Edited)</div>
   ) : null;
@@ -230,7 +226,7 @@ export default function ChatMessage({
       />
     );
   }
- 
+
   return (
     <>
       <div className="w-5/6 w-full p-1 word-break-break-word">
@@ -297,7 +293,7 @@ export default function ChatMessage({
                 )}
               </div>
             </div> */}
-            {chat.content_blocks && chat.content_blocks.length > 0 && (
+            {chat.content_blocks && chat.content_blocks.length > 0 &&  (
               <ContentBlockDisplay
                 contentBlocks={chat.content_blocks}
                 isLoading={
