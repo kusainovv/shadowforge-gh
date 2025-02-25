@@ -38,6 +38,8 @@ from .get_aspis_execute_order import GetAspisExecuteOrderComponent
 from .get_aspis_fund_info import GetAspisFundInfoComponent
 from .get_aspis_vault_balance import GetAspisVaultBalanceComponent
 from .get_aspis_rates import GetAspisRatesComponent
+from .get_user_tweets from GetUserTweetsComponent
+from .get_entangle_asset_price from GetUDFTickerDataComponent
 
 # with warnings.catch_warnings():
 #     warnings.simplefilter("ignore", LangChainDeprecationWarning)
@@ -83,6 +85,7 @@ __all__ = [
     "GetAspisAssetRate",
     "GetAspisExecuteOrder",
     "GetAspisVaultFundInfo",
-    # "FetchUserTweets"
+    "GetUserTweets",
+    "GetUDFTickerDataComponent"
 ]
  

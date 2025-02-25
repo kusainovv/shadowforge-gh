@@ -7,7 +7,7 @@ class GetFearGreedComponent(LCToolComponent):
     display_name = "Get Fear Greed"
     description = "Fetches the latest Fear and Greed Index value using an external API."
     name = "GetFearGreed"
-    icon = "Entangle"
+    icon = "ShadowForge"
     
     def build_tool(self) -> Tool:
         return Tool(
