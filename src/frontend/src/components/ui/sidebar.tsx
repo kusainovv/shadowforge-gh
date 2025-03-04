@@ -211,7 +211,7 @@ const Sidebar = React.forwardRef<
     return (
       <div
         ref={ref}
-        className="group peer relative block h-full flex-col"
+        className="group peer relative block h-full flex-col z-0"
         data-state={state}
         data-collapsible={state === "collapsed" ? collapsible : ""}
         data-variant={variant}

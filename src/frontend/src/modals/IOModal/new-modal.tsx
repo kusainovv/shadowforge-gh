@@ -21,6 +21,8 @@ import { SelectedViewField } from "./components/selected-view-field";
 import { SidebarOpenView } from "./components/sidebar-open-view";
 import { useGetConfig } from "@/controllers/API/queries/config/use-get-config";
 import { EventDeliveryType } from "@/constants/enums";
+import { Frame, Window } from "react95";
+import { WindowsModal } from "./window-modal";
 
 export default function IOModal({
   children,
@@ -243,31 +245,35 @@ export default function IOModal({
   // }, []);
 
   return (
-    <BaseModal
-      open={open}
-      setOpen={setOpen}
-      disable={disable}
-      type={isPlayground ? "full-screen" : undefined}
-      onSubmit={() => sendMessage({ repeat: 1 })}
-      size="x-large"
-      className="p-0"
-    >
-      <BaseModal.Trigger>{children}</BaseModal.Trigger>
+    <>
+       {/* open={open}
+       setOpen={setOpen}
+       disable={disable}
+       type={isPlayground ? "full-screen" : undefined}
+       onSubmit={() => sendMessage({ repeat: 1 })}
+       size="x-large"
+       className="p-0" */}
+     
+      <div onClick={() => {
+        setOpen(true);
+      }}>{children}</div>
       {/* TODO ADAPT TO ALL TYPES OF INPUTS AND OUTPUTS */}
-      <BaseModal.Content overflowHidden className="h-full">
+      <WindowsModal isOpen={open} onClose={() => {
+        setOpen(false)
+      }} title="Playground" maxHeight={600} maxWidth={800} maxContentHeight={600} defaultPosition={{ x: 50, y: 50 }}>
         {open && (
-          <div className="flex"> {/**flex-max-width h-full bg-red-500 */}
+          <div className="flex h-full"> {/**flex-max-width h-full bg-red-500 */}
             <div
               className={cn(
-                "flex bg-light-gray flex-shrink-0 flex-col min-w-[250px] justify-start transition-all duration-300",
+                "flex flex-shrink-0 p-2 content-box sticky top-0 h-fit flex-col justify-start transition-all duration-300",
                 // sidebarOpen
                   // ? "absolute z-50 lg:relative lg:w-1/5 lg:max-w-[280px]"
                   // : "",
-                "h-[calc(95vh-32px)] shadow-sidebar-chat"
+                // "shadow-sidebar-chat"
               )}
             >
-              <div className="flex flex-col overflow-y-auto h-full border-r border-border p-4 text-center custom-scroll dark:bg-canvas">
-                <div className="flex items-center gap-2 pb-8">
+              <div className="flex flex-col overflow-y-auto text-center custom-scroll">
+                <div className="flex items-center gap-2">
                   {/* <ShadTooltip
                     styleClasses="z-50"
                     side="right"
@@ -284,9 +290,9 @@ export default function IOModal({
                       />
                     </Button>
                   </ShadTooltip> */}
-                  {sidebarOpen && (
+                  {/* {sidebarOpen && (
                     <div className=" ">Chat</div>
-                  )}
+                  )} */}
                 </div>
                 {/* {sidebarOpen && ( */}
                   <SidebarOpenView
@@ -300,7 +306,7 @@ export default function IOModal({
                 {/* )} */}
               </div>
             </div>
-            <div className="flex min-w-96 h-[calc(95vh-32px)] flex-grow bg-silver">
+            <div className="flex flex-grow bg-silver">
               {/* {selectedViewField && (
                 <SelectedViewField
                   selectedViewField={selectedViewField}
@@ -335,7 +341,7 @@ export default function IOModal({
             </div>
           </div>
         )}
-      </BaseModal.Content>
-    </BaseModal>
+      </WindowsModal>
+    </>
   );
 }

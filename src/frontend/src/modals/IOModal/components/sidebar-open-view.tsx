@@ -14,7 +14,7 @@ export const SidebarOpenView = ({
 }: SidebarOpenViewProps) => {
   return (
     <>
-      <div className="flex flex-col pl-3">
+      <div className="flex flex-col">
         <div className="flex flex-col gap-2 pb-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">

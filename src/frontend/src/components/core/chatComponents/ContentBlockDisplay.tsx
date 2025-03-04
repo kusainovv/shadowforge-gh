@@ -58,7 +58,7 @@ export function ContentBlockDisplay({
           ease: "easeOut",
         }}
         className={cn(
-          "relative rounded-lg border border-border bg-silver",
+          "relative border border-border bg-silver",
           "overflow-hidden",
         )}
       >

@@ -25,6 +25,7 @@ import TextAreaWrapper from "./components/text-area-wrapper";
 import UploadFileButton from "./components/upload-file-button";
 import useAutoResizeTextArea from "./hooks/use-auto-resize-text-area";
 import useFocusOnUnlock from "./hooks/use-focus-unlock";
+import { Frame } from "react95";
 export default function ChatInput({
   sendMessage,
   inputRef,
@@ -204,7 +205,7 @@ export default function ChatInput({
   }
 
   return (
-    <div className="flex w-full flex-col my-2">
+    <div className="flex w-full flex-col">
 
       <div>
         <div className="flex w-full items-end justify-between mb-2">
@@ -220,7 +221,7 @@ export default function ChatInput({
         </div>
       </div>
 
-      <div className="flex w-full flex-col h-[120px] bg-white focus:border-[1.75px] has-[:focus]:border-primary">
+      <Frame variant="field" className="flex w-full flex-col h-[120px] bg-white focus:border-[1.75px] has-[:focus]:border-primary">
         <TextAreaWrapper
                   isBuilding={isBuilding}
                   checkSendingOk={checkSendingOk}
@@ -234,7 +235,7 @@ export default function ChatInput({
                   isDragging={isDragging}
         />
        
-      </div>
+      </Frame>
 
       <div className={classNameFilePreview}>
           {files.map((file) => (
