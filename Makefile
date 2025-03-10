@@ -17,7 +17,7 @@ port ?= 7860
 env ?= .env
 open_browser ?= true
 path = src/backend/base/langflow/frontend
-workers ?= 1
+workers ?= 10
 async ?= true
 lf ?= false
 ff ?= true
@@ -280,9 +280,7 @@ ifdef login
 		$(if $(filter-out 1,$(workers)),, --reload) \
 		--env-file $(env) \
 		--loop asyncio \
-		--workers 4
-		## $(if $(workers),--workers $(workers),--workers 4)
-		## $(if $(workers),--workers $(workers),)
+		$(if $(workers),--workers $(workers),)
 else
 	@echo "Running backend respecting the $(env) file"
 	uv run uvicorn \
@@ -292,9 +290,7 @@ else
 		$(if $(filter-out 1,$(workers)),, --reload) \
 		--env-file $(env) \
 		--loop asyncio \
-		--workers 4
-		## $(if $(workers),--workers $(workers),--workers 4)
-		## $(if $(workers),--workers $(workers), )
+		$(if $(workers),--workers $(workers),)
 endif
 
 backend-prod: setup_env install_backend ## run the backend in production mode
@@ -307,8 +303,7 @@ ifdef login
 		--port 7860 \
 		--env-file $(env) \
 		--loop asyncio \
-		--workers 4
-		## $(if $(workers),--workers $(workers),--workers 4)
+		$(if $(workers),--workers $(workers),)
 else
 	@echo "Running backend in production mode respecting the $(env) file"
 	uv run uvicorn \
@@ -317,8 +312,7 @@ else
 		--port 7860 \
 		--env-file $(env) \
 		--loop asyncio \
-		--workers 4
-		## $(if $(workers),--workers $(workers),--workers 4)
+		$(if $(workers),--workers $(workers),)
 endif
 
 build_and_run: setup_env ## build the project and run it
