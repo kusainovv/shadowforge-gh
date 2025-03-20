@@ -165,7 +165,7 @@ services:
         - traefik.http.services.${STACK_NAME?Variable not set}-flower.loadbalancer.server.port=5555
 
   frontend:
-    image: "langflowai/langflow-frontend:latest"
+    image: "ghcr.io/kusainovv/langflow:latest"
     env_file:
       - .env
     restart: on-failure
