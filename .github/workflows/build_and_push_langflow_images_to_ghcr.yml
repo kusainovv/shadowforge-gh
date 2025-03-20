@@ -26,8 +26,8 @@ jobs:
 
       - name: Build and Push Langflow (Full)
         run: |
-          docker build -t ghcr.io/${{ github.actor }}/langflow:latest -f docker/build_and_push.Dockerfile .
-          docker push ghcr.io/${{ github.actor }}/langflow:latest
+          docker build -t ghcr.io/${{ github.actor }}/shadowforge:latest -f docker/build_and_push.Dockerfile .
+          docker push ghcr.io/${{ github.actor }}/shadowforge:latest
 
   build-and-push-backend:
     needs: build-and-push-langflow  # Wait for the full Langflow image to be built
@@ -49,9 +49,9 @@ jobs:
 
       - name: Build and Push Backend-Only Image
         run: |
-          docker build --build-arg LANGFLOW_IMAGE=ghcr.io/${{ github.actor }}/langflow:latest \
-            -t ghcr.io/${{ github.actor }}/langflow-backend:latest -f docker/build_and_push_backend.Dockerfile .
-          docker push ghcr.io/${{ github.actor }}/langflow-backend:latest
+          docker build --build-arg LANGFLOW_IMAGE=ghcr.io/${{ github.actor }}/shadowforge:latest \
+            -t ghcr.io/${{ github.actor }}/shadowforge-backend:latest -f docker/build_and_push_backend.Dockerfile .
+          docker push ghcr.io/${{ github.actor }}/shadowforge-backend:latest
 
   build-and-push-frontend:
     needs: build-and-push-langflow  # Frontend depends on the full Langflow image
@@ -73,5 +73,5 @@ jobs:
 
       - name: Build and Push Frontend Image
         run: |
-          docker build -t ghcr.io/${{ github.actor }}/langflow-frontend:latest -f docker/frontend/build_and_push_frontend.Dockerfile .
-          docker push ghcr.io/${{ github.actor }}/langflow-frontend:latest
+          docker build -t ghcr.io/${{ github.actor }}/shadowforge-frontend:latest -f docker/frontend/build_and_push_frontend.Dockerfile .
+          docker push ghcr.io/${{ github.actor }}/shadowforge-frontend:latest
