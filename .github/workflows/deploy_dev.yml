@@ -9,7 +9,7 @@ jobs:
 
     steps:
       - name: Deploy with Docker Compose
-        uses: appleboy/ssh-action@v0.1.8
+        uses: appleboy/ssh-action@v1.2.2
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
